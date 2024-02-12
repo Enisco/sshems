@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1046519862672",
+    "firebase_url": "https://sshems-fyp-default-rtdb.firebaseio.com",
+    "project_id": "sshems-fyp",
+    "storage_bucket": "sshems-fyp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046519862672:android:9b3f723699f33726b5cf15",
+        "android_client_info": {
+          "package_name": "com.example.sshems"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmGyNpf3-unz0dqd1JeIgQxVo3sC1fZ6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
