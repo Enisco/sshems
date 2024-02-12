@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AnaluticsPage extends StatefulWidget {
@@ -11,9 +10,9 @@ class AnaluticsPage extends StatefulWidget {
 class _AnaluticsPageState extends State<AnaluticsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [],
         ),
