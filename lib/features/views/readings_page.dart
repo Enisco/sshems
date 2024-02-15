@@ -1,7 +1,7 @@
-import 'dart:async';
-import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sshems/features/controller/controller.dart';
 
 class ReadingsPage extends StatefulWidget {
   const ReadingsPage({super.key});
@@ -11,130 +11,104 @@ class ReadingsPage extends StatefulWidget {
 }
 
 class _ReadingsPageState extends State<ReadingsPage> {
-  double voltage = 230.0;
-  double batteryChargeCurrent = 4.5,
-      batterydisChargeCurrent = 3.7,
-      bateryVoltage = 54.5;
-  late Stream<List<double>> voltageStream;
-  List<double> valsList =
-      []; // AC volatge, DC chargeCur, DC dischargeCur, DC voltage
-  bool voltageSupply = true, isNightTime = false;
-  List tiersName = ["Lights", "Power Outlets", "Power Appliances", "Others"];
-  List tiersCaption = [
-    "All lights in the house",
-    "Sockets and all power outlets",
-    "All power appliances in the house",
-    "Other devices on the last line",
-  ];
+  final _controller = Get.put(DataController());
 
   @override
   void initState() {
     super.initState();
-
-    voltageStream = Stream<List<double>>.periodic(
-      const Duration(seconds: 1),
-      (count) => [
-        Random().nextInt(5) + 230.0,
-        Random().nextInt(3) / 3 + 4.5,
-        Random().nextInt(3) / 3 + 3.7,
-        Random().nextInt(4) / 3.9 + 54.6,
-      ],
-    );
-
-    voltageStream.listen((vals) {
-      setState(() {
-        voltage = vals[0];
-        batteryChargeCurrent = vals[1];
-        batterydisChargeCurrent = vals[2];
-        bateryVoltage = vals[3];
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            SizedBox(height: size.width * 0.03),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _detailsCard(
-                  title: "AC Voltage\nsupplied:",
-                  value: voltageSupply
-                      ? '${voltage.toStringAsFixed(2)} V'
-                      : "No Supply",
-                  bgColor: const Color.fromARGB(255, 184, 217, 245),
-                  iconData: CupertinoIcons.bolt,
-                  iconColor: Colors.blue,
-                  iconBgColor: Colors.white,
-                ),
-                _detailsCard(
-                  title: "Active Power\nusage:",
-                  value: '${(voltage * 5.7 / 1000).toStringAsFixed(2)} kW',
-                  bgColor: const Color.fromARGB(255, 217, 245, 239),
-                  iconData: Icons.electric_meter,
-                  iconColor: Colors.teal,
-                  iconBgColor: Colors.white,
-                ),
-              ],
-            ),
-            SizedBox(height: size.width * 0.03),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                isNightTime == true
-                    ? _detailsCard(
-                        title: "PV charging\ncurrent:",
-                        value: '${batteryChargeCurrent.toStringAsFixed(2)} A',
-                        bgColor: const Color.fromARGB(255, 241, 216, 138),
-                        iconData: Icons.battery_charging_full_outlined,
-                        iconColor: Colors.amber.shade800,
+    return GetBuilder<DataController>(
+        init: DataController(),
+        builder: (context) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 25),
+                  const Row(
+                    children: [
+                      Text(
+                        'System Status',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _detailsCard(
+                        title: "AC Voltage\nsupplied:",
+                        value: _controller.acVoltsSupplyAvailable
+                            ? '${_controller.acVoltage.toStringAsFixed(2)} V'
+                            : "No Supply",
+                        bgColor: const Color.fromARGB(255, 184, 217, 245),
+                        iconData: CupertinoIcons.bolt,
+                        iconColor: Colors.blue,
                         iconBgColor: Colors.white,
-                      )
-                    : _detailsCard(
-                        title: "Battery discharging\ncurrent:",
-                        value: voltageSupply
-                            ? "---"
-                            : '${batterydisChargeCurrent.toStringAsFixed(2)} A',
-                        bgColor: const Color.fromARGB(255, 250, 196, 192),
-                        iconData: CupertinoIcons.battery_25,
-                        iconColor: Colors.red.shade700,
+                      ),
+                      _detailsCard(
+                        title: "Active Power\nusage:",
+                        value:
+                            '${(_controller.activePower / 1000).toStringAsFixed(2)} kW',
+                        bgColor: const Color.fromARGB(255, 217, 245, 239),
+                        iconData: Icons.electric_meter,
+                        iconColor: Colors.teal,
+                        iconBgColor: Colors.white,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: size.width * 0.03),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _controller.isNightTime == true
+                          ? _detailsCard(
+                              title: "PV charging\ncurrent:",
+                              value:
+                                  '${_controller.batteryChargeCurrent.toStringAsFixed(2)} A',
+                              bgColor: const Color.fromARGB(255, 241, 216, 138),
+                              iconData: Icons.battery_charging_full_outlined,
+                              iconColor: Colors.amber.shade800,
+                              iconBgColor: Colors.white,
+                            )
+                          : _detailsCard(
+                              title: "Battery discharging\ncurrent:",
+                              value: _controller.acVoltsSupplyAvailable
+                                  ? "---"
+                                  : '${_controller.batterydisChargeCurrent.toStringAsFixed(2)} A',
+                              bgColor: const Color.fromARGB(255, 250, 196, 192),
+                              iconData: CupertinoIcons.battery_25,
+                              iconColor: Colors.red.shade700,
+                              iconBgColor:
+                                  const Color.fromARGB(255, 226, 238, 226),
+                            ),
+                      _detailsCard(
+                        title: "Battery\nvoltage:",
+                        value:
+                            '${_controller.bateryVoltage.toStringAsFixed(2)} V',
+                        bgColor: const Color.fromARGB(255, 199, 247, 200),
+                        iconData: CupertinoIcons.battery_full,
+                        iconColor: Colors.green,
                         iconBgColor: const Color.fromARGB(255, 226, 238, 226),
                       ),
-                _detailsCard(
-                  title: "Battery\nvoltage:",
-                  value: '${bateryVoltage.toStringAsFixed(2)} V',
-                  bgColor: const Color.fromARGB(255, 199, 247, 200),
-                  iconData: CupertinoIcons.battery_full,
-                  iconColor: Colors.green,
-                  iconBgColor: const Color.fromARGB(255, 226, 238, 226),
-                ),
-              ],
-            ),
-            SizedBox(height: size.width * 0.03),
-            const SizedBox(height: 30),
-            const Row(
-              children: [
-                Text(
-                  'Order Your Priorities',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                ],
+              ),
             ),
-            const SizedBox(height: 14),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget _detailsCard({

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sshems/features/controller/controller.dart';
+import 'package:sshems/features/views/analytics_page.dart';
 import 'package:sshems/features/views/readings_page.dart';
 
 class Homepage extends StatefulWidget {
@@ -12,15 +13,15 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  
   final controller = Get.put(DataController());
+
   @override
   Widget build(BuildContext context) {
-    return  GetBuilder<DataController>(
-        init: DataController(),
-        builder: (context) {
+    return GetBuilder<DataController>(
+      init: DataController(),
+      builder: (context) {
         return DefaultTabController(
-          length: 2, 
+          length: 2,
           child: Scaffold(
             appBar: AppBar(
               title: const Text(
@@ -72,15 +73,15 @@ class _HomepageState extends State<Homepage> {
                 ],
               ),
             ),
-            body: TabBarView(children: [
-              const ReadingsPage(),
-              Container(
-                color: Colors.red,
-              ),
-            ]),
+            body: const TabBarView(
+              children: [
+                ReadingsPage(),
+                AnalyticsPage(),
+              ],
+            ),
           ),
         );
-      }
+      },
     );
   }
 }
