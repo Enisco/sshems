@@ -16,6 +16,12 @@ class _HomepageState extends State<Homepage> {
   final controller = Get.put(DataController());
 
   @override
+  void initState() {
+    controller.refreshLatestData();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GetBuilder<DataController>(
       init: DataController(),

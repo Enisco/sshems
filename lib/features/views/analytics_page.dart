@@ -22,16 +22,17 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return GetBuilder<DataController>(
       init: DataController(),
       builder: (context) {
-        return const Scaffold(
+        return Scaffold(
           body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SizedBox(height: 25),
-                Row(
+                const SizedBox(height: 25),
+                const Row(
                   children: [
                     Text(
                       'System Capacity Analysis',
@@ -43,10 +44,20 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-                //
-                SizedBox(height: 30),
-                Row(
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  width: size.width,
+                  
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.teal,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                
+                const SizedBox(height: 30),
+                const Row(
                   children: [
                     Text(
                       'Switch Power Lines',
@@ -58,7 +69,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),
