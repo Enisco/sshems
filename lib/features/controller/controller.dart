@@ -70,7 +70,8 @@ class DataController extends GetxController {
 
   calculateBatteryCapacityPeriod() {
     double batteryCapacity = 220; // in Ah
-    double inverterBatteryThreshold = 47.2; //  in volts
+    // double inverterBatteryThreshold = 47.2; //  in volts
+    double inverterBatteryThreshold = 48.5; //  in volts
 
     double t, timeInDecimal;
     String exactTimeEstimated;
