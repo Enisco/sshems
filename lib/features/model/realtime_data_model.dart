@@ -9,8 +9,8 @@ String sshemsLatestDataModelToJson(SshemsLatestDataModel data) =>
 class SshemsLatestDataModel {
   final double? irms;
   final double? apparentPower;
-  final int? batteryVoltage;
-  final int? chargingCurrent;
+  final double? batteryVoltage;
+  final double? chargingCurrent;
   final double? dischargeCurrent;
   final double? powerFactor;
   final double? realPower;
@@ -32,8 +32,8 @@ class SshemsLatestDataModel {
   SshemsLatestDataModel copyWith({
     double? irms,
     double? apparentPower,
-    int? batteryVoltage,
-    int? chargingCurrent,
+    double? batteryVoltage,
+    double? chargingCurrent,
     double? dischargeCurrent,
     double? powerFactor,
     double? realPower,
@@ -56,8 +56,8 @@ class SshemsLatestDataModel {
       SshemsLatestDataModel(
         irms: json["Irms"]?.toDouble(),
         apparentPower: json["apparentPower"]?.toDouble(),
-        batteryVoltage: json["batteryVoltage"],
-        chargingCurrent: json["chargingCurrent"],
+        batteryVoltage: json["batteryVoltage"]?.toDouble(),
+        chargingCurrent: json["chargingCurrent"]?.toDouble(),
         dischargeCurrent: json["dischargeCurrent"]?.toDouble(),
         powerFactor: json["powerFactor"]?.toDouble(),
         realPower: json["realPower"]?.toDouble(),

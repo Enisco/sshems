@@ -13,11 +13,11 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  final controller = Get.put(DataController());
+  final _controller = Get.put(DataController());
 
   @override
   void initState() {
-    controller.refreshLatestData();
+    _controller.refreshLatestData();
     super.initState();
   }
 
@@ -76,6 +76,32 @@ class _HomepageState extends State<Homepage> {
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+            bottomSheet: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              height: 60,
+              color: Colors.teal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Power on Grid?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Switch(
+                    activeTrackColor: Colors.white,
+                    activeColor: Colors.amber,
+                    value: _controller.acVoltsSupplyAvailable,
+                    onChanged: (val) {
+                      _controller.toggleAcSupplyState();
+                    },
+                  )
                 ],
               ),
             ),
