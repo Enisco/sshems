@@ -179,4 +179,20 @@ class DataController extends GetxController {
 
     print('Percentage charge: $clampedPercentageCharge%');
   }
+
+  DateTime parseTimeString() {
+    String timeString = latestData.time!;
+    List<String> parts = timeString.split(' '); // Split date and time parts
+    List<String> dateParts = parts[0].split('-'); // Split date parts
+    List<String> timeParts = parts[1].split(':'); // Split time parts
+
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+    int hour = int.parse(timeParts[0]);
+    int minute = int.parse(timeParts[1]);
+    int second = int.parse(timeParts[2]);
+
+    return DateTime(year, month, day, hour, minute, second);
+  }
 }

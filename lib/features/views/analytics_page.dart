@@ -5,6 +5,7 @@ import 'package:sliding_switch/sliding_switch.dart';
 import 'package:sshems/features/controller/controller.dart';
 import 'package:sshems/widgets/curved_container.dart';
 import 'package:sshems/widgets/strings_extension.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -100,149 +101,186 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   Widget _analyticsCard() {
     Size size = MediaQuery.of(context).size;
 
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-      child: Container(
-        width: size.width,
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.teal,
-          borderRadius: BorderRadius.circular(26),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 2,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(child: SizedBox()),
-                RotatedBox(
-                  quarterTurns: 3,
-                  child: Icon(
-                    CupertinoIcons.battery_full,
-                    color: Colors.green.shade200,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Center(
-                  child: Text(
-                    '${(_controller.batteryPercentage ?? 0)} %',
-                    style: const TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const Expanded(child: SizedBox()),
-                Container(
-                  width: 0.3,
-                  height: 40,
-                  color: Colors.white70,
-                ),
-                const Expanded(child: SizedBox()),
-                Icon(
-                  Icons.electric_meter,
-                  color: Colors.amber.shade200,
-                  size: 30,
-                ),
-                const SizedBox(width: 4),
-                Center(
-                  child: Text(
-                    (_controller.latestData.apparentPower ?? 0)
-                        .toStringAsFixed(0)
-                        .toWattsString(),
-                    style: const TextStyle(
-                      fontSize: 23,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const Expanded(child: SizedBox()),
-              ],
-            ),
-            _controller.isNightTime == false
-                ? const Row(
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 14),
+          child: Card(
+            elevation: 6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+            child: Container(
+              width: size.width,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.teal,
+                borderRadius: BorderRadius.circular(26),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 2,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        CupertinoIcons.info_circle,
-                        color: Colors.amber,
-                        size: 30,
-                      ),
-                      SizedBox(width: 12),
                       SizedBox(
-                        // width: size.width * 0.65,
-                        child: Text(
-                          "Power analysis will be available \nbetween 9pm and 5am.",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
+                        width: size.width * 0.35,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RotatedBox(
+                              quarterTurns: 3,
+                              child: Icon(
+                                CupertinoIcons.battery_full,
+                                color: Colors.green.shade200,
+                                size: 30,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Center(
+                              child: Text(
+                                '${(_controller.batteryPercentage ?? 0)} %',
+                                style: const TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 0.3,
+                        height: 40,
+                        color: Colors.white70,
+                      ),
+                      SizedBox(
+                        width: size.width * 0.35,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.electric_meter,
+                              color: Colors.amber.shade200,
+                              size: 30,
+                            ),
+                            const SizedBox(width: 4),
+                            Center(
+                              child: Text(
+                                (_controller.latestData.apparentPower ?? 0)
+                                    .toStringAsFixed(0)
+                                    .toWattsString(),
+                                style: const TextStyle(
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  )
-                : _controller.acVoltsSupplyAvailable == true
-                    ? const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            CupertinoIcons.lightbulb_fill,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          SizedBox(width: 12),
-                          SizedBox(
-                            // width: size.width * 0.65,
-                            child: Text(
-                              "There is power on grid. \nInverter battery is charging.",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
+                  ),
+                  _controller.isNightTime == false
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              CupertinoIcons.info_circle,
+                              color: Colors.amber,
+                              size: 30,
                             ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                CupertinoIcons.info_circle_fill,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              const SizedBox(width: 12),
-                              SizedBox(
-                                width: size.width - 130,
-                                child: Text(
-                                  'If you continue using the same load of ${_controller.latestData.apparentPower} Watts, your inverter battery will last  for ${_controller.estimatedHours} hrs, ${_controller.estimatedmins} mins.',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
+                            SizedBox(width: 12),
+                            SizedBox(
+                              // width: size.width * 0.65,
+                              child: Text(
+                                "Power analysis will be available \nbetween 9pm and 5am.",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-          ],
+                            ),
+                          ],
+                        )
+                      : _controller.acVoltsSupplyAvailable == true
+                          ? const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.lightbulb_fill,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                SizedBox(width: 12),
+                                SizedBox(
+                                  // width: size.width * 0.65,
+                                  child: Text(
+                                    "There is power on grid. \nInverter battery is charging.",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      CupertinoIcons.info_circle_fill,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    SizedBox(
+                                      width: size.width - 130,
+                                      child: Text(
+                                        'If you continue using the same load of ${_controller.latestData.apparentPower} Watts, your inverter battery will last  for ${_controller.estimatedHours} hrs, ${_controller.estimatedmins} mins.',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomCurvedContainer(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              borderColor: Colors.orange,
+              child: Text(
+                timeago.format(_controller.parseTimeString()),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
     );
   }
 
