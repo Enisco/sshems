@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
@@ -13,16 +14,76 @@ enum ChargingRate { high, good, average, low, poor, nightime }
 class DataController extends GetxController {
   static DataController get to => Get.find();
 
-  bool loading = false, isNightTime = false, acVoltsSupplyAvailable = false;
+  bool loading = false,
+      isNightTime = false,
+      manualNightSet = false,
+      acVoltsSupplyAvailable = false;
   SshemsLatestDataModel latestData = SshemsLatestDataModel();
   ChargingRate currentChargingRate = ChargingRate.nightime;
+  int? timeEstimatedInMinutes, estimatedHours, estimatedmins, batteryPercentage;
+  List<int> commandDigits = [0, 0, 0, 0];
+
+  checkIfTimeIsNight() {
+    Timer.periodic(const Duration(minutes: 1), (timer) {
+      DateTime currentTime = DateTime.now();
+      // Check if the current time is between 9 PM and 5 AM
+      if (manualNightSet == false) {
+        if (currentTime.hour >= 21 || currentTime.hour < 5) {
+          isNightTime = true;
+          update();
+        } else {
+          isNightTime = false;
+          update();
+        }
+      }
+    });
+  }
+
+  updateButtonState(int index, bool newState) {
+    commandDigits[index] = newState == true ? 1 : 0;
+    String commandMessage =
+        "${commandDigits[0]}${commandDigits[1]}${commandDigits[2]}${commandDigits[3]}";
+    print("commandMessage: $commandMessage");
+
+    final databaseReference = FirebaseDatabase.instance.ref();
+    const String path = "Priority/state";
+
+    databaseReference.child(path).set(commandMessage).then((_) {
+      print("State updated successfully to: $commandMessage");
+    }).catchError((error) {
+      print("Failed to update state: $error");
+    });
+
+    update();
+  }
+
+  retrieveSwitchInstruction() async {
+    const String path = "Priority/state";
+    final ref = FirebaseDatabase.instance.ref();
+    final snapshot = await ref.child(path).get();
+    if (snapshot.exists) {
+      print(snapshot.value);
+      String commandString = snapshot.value.toString();
+      commandDigits = commandString.split('').map(int.parse).toList();
+      print('commandString: $commandString, commandDigits: $commandDigits');
+    } else {
+      print('No data available.');
+    }
+    update();
+  }
 
   toggleAcSupplyState() {
     acVoltsSupplyAvailable = !acVoltsSupplyAvailable;
     update();
   }
 
-  refreshLatestData() {
+  toggleAcNightTimeState(bool val) {
+    isNightTime = val;
+    manualNightSet = val == true ? true : false;
+    update();
+  }
+
+  refreshLatestData() async {
     loading = true;
     update();
     try {
@@ -39,8 +100,10 @@ class DataController extends GetxController {
           print(latestDataReceived.toJson());
           latestData = latestDataReceived;
           update();
+
           getChargingRate(latestData.chargingCurrent ?? 0);
           calculateBatteryCapacityPeriod();
+          calculateBatteryPercentage();
         }
       });
     } catch (e) {
@@ -70,8 +133,7 @@ class DataController extends GetxController {
 
   calculateBatteryCapacityPeriod() {
     double batteryCapacity = 220; // in Ah
-    // double inverterBatteryThreshold = 47.2; //  in volts
-    double inverterBatteryThreshold = 48.5; //  in volts
+    double inverterBatteryThreshold = 47.2; //  in volts
 
     double t, timeInDecimal;
     String exactTimeEstimated;
@@ -88,12 +150,33 @@ class DataController extends GetxController {
       }
     }
 
-    int hoursEstimated = timeInDecimal.toInt();
-    int minutesEstimated = ((timeInDecimal - hoursEstimated) * 60).toInt();
-    exactTimeEstimated = '$hoursEstimated hours, $minutesEstimated mins';
+    estimatedHours = timeInDecimal.toInt();
+    estimatedmins = ((timeInDecimal - estimatedHours!) * 60).toInt();
+    exactTimeEstimated = '$estimatedHours hours, $estimatedmins mins';
+    timeEstimatedInMinutes = (timeInDecimal * 60).toInt();
+
+    print("Time in minutes: $timeEstimatedInMinutes");
 
     print(
       '\n \n \t If you continue using the same load of ${latestData.apparentPower} Watts, \n\t your inverter battery will last  for $exactTimeEstimated',
     );
+  }
+
+  calculateBatteryPercentage() {
+    const fullChargeVoltage = 56.8;
+    const lowVoltageCutoff = 47.2;
+    double percentageCharge;
+    if (latestData.batteryVoltage! - lowVoltageCutoff < 0) {
+      percentageCharge = 0;
+    } else {
+      percentageCharge = ((latestData.batteryVoltage! - lowVoltageCutoff) /
+              (fullChargeVoltage - lowVoltageCutoff)) *
+          100;
+    }
+
+    final clampedPercentageCharge = percentageCharge.clamp(0.0, 100.0);
+    batteryPercentage = clampedPercentageCharge.round();
+
+    print('Percentage charge: $clampedPercentageCharge%');
   }
 }

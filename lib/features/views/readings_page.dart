@@ -71,29 +71,6 @@ class _ReadingsPageState extends State<ReadingsPage> {
                     ),
                   ],
                 ),
-
-                // const SizedBox(height: 15),
-                // _controller.isNightTime == false
-                //     ? _detailsCard(
-                //         title: "PV charging\ncurrent:",
-                //         value:
-                //             '${_controller.batteryChargeCurrent.toStringAsFixed(2)} A',
-                //         bgColor: const Color.fromARGB(255, 241, 216, 138),
-                //         iconData: Icons.battery_charging_full_outlined,
-                //         iconColor: Colors.amber.shade800,
-                //         iconBgColor: Colors.white,
-                //       )
-                //     : _detailsCard(
-                //         title: "Battery discharging\ncurrent:",
-                //         value: _controller.acVoltsSupplyAvailable
-                //             ? "---"
-                //             : '${_controller.batterydisChargeCurrent.toStringAsFixed(2)} A',
-                //         bgColor: const Color.fromARGB(255, 250, 196, 192),
-                //         iconData: CupertinoIcons.battery_25,
-                //         iconColor: Colors.red.shade700,
-                //         iconBgColor: const Color.fromARGB(255, 226, 238, 226),
-                //       ),
-
                 const SizedBox(height: 25),
                 const Row(
                   children: [
@@ -182,7 +159,7 @@ class _ReadingsPageState extends State<ReadingsPage> {
                       ),
                       const SizedBox(width: 12),
                       SizedBox(
-                        width: size.width * 0.6,
+                        width: size.width * 0.65,
                         child: const Text(
                           "Sunshine Intensity is shown during the day",
                           style: TextStyle(
@@ -197,7 +174,7 @@ class _ReadingsPageState extends State<ReadingsPage> {
                 : Row(
                     children: [
                       const Icon(
-                        CupertinoIcons.sun_haze,
+                        Icons.solar_power_rounded,
                         color: Colors.white,
                         size: 30,
                       ),
